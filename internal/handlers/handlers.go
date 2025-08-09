@@ -24,6 +24,11 @@ func SetupRoutes(r *mux.Router) {
 }
 
 // GetUsers returns all users
+// @Summary List users
+// @Tags users
+// @Produce json
+// @Success 200 {array} models.User
+// @Router /api/users [get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	users := []models.User{
 		{ID: 1, Name: "John Doe", Email: "john@example.com"},
@@ -35,6 +40,13 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateUser creates a new user
+// @Summary Create user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body models.User true "User payload"
+// @Success 201 {object} models.User
+// @Router /api/users [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
@@ -51,6 +63,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUser returns a specific user
+// @Summary Get user by ID
+// @Tags users
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} models.User
+// @Router /api/users/{id} [get]
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -67,6 +85,14 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateUser updates a user
+// @Summary Update user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Param user body models.User true "User payload"
+// @Success 200 {object} models.User
+// @Router /api/users/{id} [put]
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -88,6 +114,11 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteUser removes a user
+// @Summary Delete user
+// @Tags users
+// @Param id path int true "User ID"
+// @Success 204 {string} string ""
+// @Router /api/users/{id} [delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	_, err := strconv.Atoi(vars["id"])
@@ -101,6 +132,11 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // HealthCheck verifies API is up
+// @Summary Health check
+// @Tags health
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /health [get]
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
 		"status":  "OK",

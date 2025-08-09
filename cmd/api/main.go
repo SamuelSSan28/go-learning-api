@@ -1,3 +1,9 @@
+// @title Go Study API
+// @version 1.0
+// @description A simple REST API for learning Go.
+// @BasePath /
+// @schemes http
+
 package main
 
 // Imports are the packages we bring into this file
@@ -12,6 +18,11 @@ import (
 
 	// third-party router
 	"github.com/gorilla/mux"
+
+	// swagger docs (generated) and UI
+	_ "study-go/docs"
+	_ "github.com/swaggo/files"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func main() {
@@ -27,6 +38,12 @@ func main() {
 	// 3) REGISTER ROUTES
 	// Centralized in handlers.SetupRoutes
 	handlers.SetupRoutes(r)
+
+	// 3.1) SWAGGER UI ROUTE
+	// Serves interactive docs at /swagger/index.html
+	r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
 
 	// 4) PICK SERVER PORT
 	// Read from env var PORT or fallback to 8080

@@ -14,6 +14,7 @@ study-go/
 │   ├── handlers/handlers.go     # HTTP handlers (users, health)
 │   └── models/user.go           # Data models
 ├── pkg/middleware/middleware.go # Middlewares (logging, CORS)
+├── docs/                        # Auto-generated Swagger docs
 ├── go.mod / go.sum              # Dependencies
 ├── README.md                    # Central, didactic guide (this file)
 ├── LICENSE                      # MIT license
@@ -56,8 +57,6 @@ import (
 - "log", "net/http", "os" come from the Go standard library
 - "study-go/..." are local project packages
 - "github.com/gorilla/mux" is a third‑party dependency (declared in go.mod)
-
-See more details in CODE_EXPLAINED.md (optional deep dive).
 
 ### 2) Router: mux.NewRouter()
 Go does not have classes; it has packages, functions, and structs. `mux.NewRouter()` is a function from Gorilla Mux that returns a `*mux.Router` struct instance you use to declare routes.
@@ -133,6 +132,28 @@ curl -X POST http://localhost:8080/api/users \
   -d '{"name":"John Doe","email":"john@example.com"}'
 ```
 
+## Add Swagger/OpenAPI (Step-by-step)
+
+Swagger gives you interactive API docs at `/swagger/index.html`.
+
+1) Install the CLI (once):
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+Ensure your PATH includes `$(go env GOPATH)/bin`.
+
+2) Generate docs (creates `./docs`):
+```bash
+swag init --parseDependency --parseInternal -g cmd/api/main.go
+```
+
+3) Run the server and open:
+- `http://localhost:8080/swagger/index.html`
+
+Notes:
+- Minimal annotations were added to handlers (e.g., `@Summary`, `@Tags`, `@Router`)
+- If build breaks due to swag versions, pin it: `go get github.com/swaggo/swag@v1.16.6`
+
 ## Learning Checklist
 
 - Imports: standard vs. local vs. external
@@ -142,18 +163,14 @@ curl -X POST http://localhost:8080/api/users \
 - JSON: `encoding/json` for encoding/decoding
 - Variables: `:=` vs. `var`
 - Project layout: `cmd/`, `internal/`, `pkg/`
-
-## Optional Deep Dive
-
-For a verbose explanation with analogies and step‑by‑step notes, see:
-- CODE_EXPLAINED.md
+- Swagger: annotations, generate docs, serve UI
 
 ## Next Steps
 
 - Add database (PostgreSQL/MySQL) and repositories
 - Add validation and authentication (JWT)
 - Add tests (unit/integration)
-- Add Swagger/OpenAPI docs
+- Add Swagger/OpenAPI docs for all endpoints
 - Containerize with Docker
 
 ## License

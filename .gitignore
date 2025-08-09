@@ -32,4 +32,7 @@ Thumbs.db
 
 # Arquivos temporários
 tmp/
-temp/ 
+temp/
+
+# Swagger (keep JSON, ignore YAML)
+docs/swagger.yaml 
