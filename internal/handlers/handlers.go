@@ -10,31 +10,31 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// SetupRoutes configura todas as rotas da API
+// SetupRoutes registers all API routes
 func SetupRoutes(r *mux.Router) {
-	// Rotas de usuários
+	// User routes
 	r.HandleFunc("/api/users", GetUsers).Methods("GET")
 	r.HandleFunc("/api/users", CreateUser).Methods("POST")
 	r.HandleFunc("/api/users/{id}", GetUser).Methods("GET")
 	r.HandleFunc("/api/users/{id}", UpdateUser).Methods("PUT")
 	r.HandleFunc("/api/users/{id}", DeleteUser).Methods("DELETE")
 
-	// Rota de health check
+	// Health check route
 	r.HandleFunc("/health", HealthCheck).Methods("GET")
 }
 
-// GetUsers retorna todos os usuários
+// GetUsers returns all users
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	users := []models.User{
-		{ID: 1, Name: "João Silva", Email: "joao@email.com"},
-		{ID: 2, Name: "Maria Santos", Email: "maria@email.com"},
+		{ID: 1, Name: "John Doe", Email: "john@example.com"},
+		{ID: 2, Name: "Mary Smith", Email: "mary@example.com"},
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(users)
 }
 
-// CreateUser cria um novo usuário
+// CreateUser creates a new user
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
@@ -42,36 +42,36 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Simular criação (em um projeto real, salvaria no banco)
-	user.ID = 3 // ID simulado
+	// Simulate creation (in a real project we would persist to a DB)
+	user.ID = 3 // simulated ID
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(user)
 }
 
-// GetUser retorna um usuário específico
+// GetUser returns a specific user
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, "ID inválido", http.StatusBadRequest)
+		http.Error(w, "invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	// Simular busca (em um projeto real, buscaria no banco)
-	user := models.User{ID: id, Name: "Usuário " + strconv.Itoa(id), Email: "user" + strconv.Itoa(id) + "@email.com"}
+	// Simulate lookup (in a real project we would query the DB)
+	user := models.User{ID: id, Name: "User " + strconv.Itoa(id), Email: "user" + strconv.Itoa(id) + "@example.com"}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }
 
-// UpdateUser atualiza um usuário
+// UpdateUser updates a user
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, "ID inválido", http.StatusBadRequest)
+		http.Error(w, "invalid ID", http.StatusBadRequest)
 		return
 	}
 
@@ -87,24 +87,24 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-// DeleteUser remove um usuário
+// DeleteUser removes a user
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	_, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, "ID inválido", http.StatusBadRequest)
+		http.Error(w, "invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	// Simular remoção (em um projeto real, removeria do banco)
+	// Simulate deletion (in a real project we would delete from the DB)
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// HealthCheck verifica se a API está funcionando
+// HealthCheck verifies API is up
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
-		"status": "OK",
-		"message": "API funcionando corretamente",
+		"status":  "OK",
+		"message": "API is healthy",
 	}
 
 	w.Header().Set("Content-Type", "application/json")

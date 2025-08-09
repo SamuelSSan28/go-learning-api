@@ -1,211 +1,161 @@
-# Study Go - API REST
+# Go Study API – Central Guide
 
-Uma API REST simples em Go para estudos e aprendizado.
+A simple REST API in Go designed as a learning path. This README is the central, didactic guide for the repository.
 
-## 📁 Estrutura do Projeto
+- Project goal: learn the Go toolchain, project layout, HTTP server, routing, middleware, and JSON handling
+- Tech: Go 1.22, net/http, Gorilla Mux
+
+## Repository Map
 
 ```
 study-go/
-├── cmd/
-│   └── api/
-│       └── main.go              # Ponto de entrada da aplicação
+├── cmd/api/main.go              # Application entry point
 ├── internal/
-│   ├── handlers/
-│   │   └── handlers.go          # Manipuladores de requisições HTTP
-│   └── models/
-│       └── user.go              # Modelos de dados
-├── pkg/
-│   └── middleware/
-│       └── middleware.go        # Middlewares (logging, CORS)
-├── go.mod                       # Gerenciamento de dependências
-├── go.sum                       # Checksums das dependências
-├── README.md                    # Este arquivo
-└── .gitignore                   # Arquivos ignorados pelo Git
+│   ├── handlers/handlers.go     # HTTP handlers (users, health)
+│   └── models/user.go           # Data models
+├── pkg/middleware/middleware.go # Middlewares (logging, CORS)
+├── go.mod / go.sum              # Dependencies
+├── README.md                    # Central, didactic guide (this file)
+├── LICENSE                      # MIT license
+└── .gitignore                   # Git ignores
 ```
 
-## 📋 Explicação da Estrutura
+## Quickstart
 
-### `cmd/` - Comandos da Aplicação
-- **`cmd/api/main.go`**: Ponto de entrada principal da aplicação
-  - Configura o servidor HTTP
-  - Inicializa middlewares
-  - Configura rotas
-  - Define a porta do servidor
-
-### `internal/` - Código Interno da Aplicação
-- **`internal/handlers/handlers.go`**: Manipuladores de requisições
-  - `GetUsers()` - Lista todos os usuários
-  - `CreateUser()` - Cria um novo usuário
-  - `GetUser()` - Busca um usuário específico
-  - `UpdateUser()` - Atualiza um usuário
-  - `DeleteUser()` - Remove um usuário
-  - `HealthCheck()` - Verifica se a API está funcionando
-
-- **`internal/models/user.go`**: Modelos de dados
-  - `User` - Estrutura principal do usuário
-  - `CreateUserRequest` - Dados para criar usuário
-  - `UpdateUserRequest` - Dados para atualizar usuário
-
-### `pkg/` - Pacotes Reutilizáveis
-- **`pkg/middleware/middleware.go`**: Middlewares
-  - `LoggingMiddleware` - Registra informações das requisições
-  - `CORSMiddleware` - Permite requisições cross-origin
-
-## 🛠️ Como Construir o Projeto
-
-### Pré-requisitos
-- Go 1.22 ou superior
-- Git
-
-### Passo a Passo
-
-1. **Clone o repositório:**
-   ```bash
-   git clone <url-do-repositorio>
-   cd study-go
-   ```
-
-2. **Instale as dependências:**
-   ```bash
-   go mod tidy
-   ```
-
-3. **Execute a aplicação:**
-   ```bash
-   go run cmd/api/main.go
-   ```
-
-4. **Acesse a API:**
-   - URL base: `http://localhost:8080`
-   - Health check: `http://localhost:8080/health`
-
-## 📦 Dependências do Projeto
-
-### Principais Dependências
-- **`github.com/gorilla/mux`**: Roteador HTTP para criar APIs REST
-  - Usado para definir rotas e métodos HTTP
-  - Permite parâmetros de URL dinâmicos
-
-### Dependências Padrão do Go
-- **`net/http`**: Servidor HTTP padrão do Go
-- **`encoding/json`**: Codificação/decodificação JSON
-- **`log`**: Sistema de logging
-- **`time`**: Manipulação de tempo
-
-## 🔧 Arquivos de Configuração
-
-### `go.mod`
-```go
-module study-go
-
-go 1.22
-
-require github.com/gorilla/mux v1.8.1
-```
-- Define o nome do módulo
-- Especifica a versão do Go
-- Lista as dependências
-
-### `go.sum`
-- Contém checksums das dependências
-- Garante integridade dos pacotes
-- Gerado automaticamente pelo Go
-
-### `.gitignore`
-- Ignora arquivos desnecessários no Git
-- Binários compilados
-- Arquivos de teste
-- Logs e arquivos temporários
-
-## 🚀 Funcionalidades
-
-- ✅ **CRUD completo** de usuários
-- ✅ **Middleware de logging** para monitorar requisições
-- ✅ **Middleware CORS** para requisições cross-origin
-- ✅ **Health check** endpoint
-- ✅ **Estrutura organizada** seguindo boas práticas do Go
-- ✅ **Documentação completa** do código
-
-## 🔗 Endpoints da API
-
-| Método | Endpoint | Descrição | Exemplo de Resposta |
-|--------|----------|-----------|-------------------|
-| GET | `/health` | Verifica se a API está funcionando | `{"status":"OK","message":"API funcionando corretamente"}` |
-| GET | `/api/users` | Lista todos os usuários | `[{"id":1,"name":"João Silva","email":"joao@email.com"}]` |
-| POST | `/api/users` | Cria um novo usuário | `{"id":3,"name":"Pedro Costa","email":"pedro@email.com"}` |
-| GET | `/api/users/{id}` | Busca um usuário específico | `{"id":1,"name":"João Silva","email":"joao@email.com"}` |
-| PUT | `/api/users/{id}` | Atualiza um usuário | `{"id":1,"name":"João Silva Atualizado","email":"joao@email.com"}` |
-| DELETE | `/api/users/{id}` | Remove um usuário | `204 No Content` |
-
-## 🧪 Exemplos de Uso
-
-### Criar um usuário
+1) Install deps
 ```bash
+go mod tidy
+```
+2) Run the API
+```bash
+go run cmd/api/main.go
+```
+3) Test
+```bash
+curl http://localhost:8080/health
+```
+
+## Core Concepts (with small code excerpts)
+
+### 1) Imports in Go
+Imports bring packages (standard library, third‑party, or your own) into the file.
+```go
+import (
+  "log"        // logging to stdout/stderr
+  "net/http"   // HTTP server and client
+  "os"         // environment variables, files, etc.
+
+  // our code
+  "study-go/internal/handlers"
+  "study-go/pkg/middleware"
+
+  // third-party router
+  "github.com/gorilla/mux"
+)
+```
+- "log", "net/http", "os" come from the Go standard library
+- "study-go/..." are local project packages
+- "github.com/gorilla/mux" is a third‑party dependency (declared in go.mod)
+
+See more details in CODE_EXPLAINED.md (optional deep dive).
+
+### 2) Router: mux.NewRouter()
+Go does not have classes; it has packages, functions, and structs. `mux.NewRouter()` is a function from Gorilla Mux that returns a `*mux.Router` struct instance you use to declare routes.
+```go
+r := mux.NewRouter()
+```
+You then attach middlewares and routes to this router and pass it to the HTTP server.
+
+### 3) Middlewares
+Middlewares are request interceptors that run before your handler.
+```go
+r.Use(middleware.LoggingMiddleware)
+r.Use(middleware.CORSMiddleware)
+```
+- LoggingMiddleware: logs method, path, remote addr, duration
+- CORSMiddleware: sets CORS headers and replies to OPTIONS
+
+### 4) Routes
+Routes map HTTP methods and paths to handlers.
+```go
+handlers.SetupRoutes(r) // centralizes all route bindings
+```
+Example (from handlers.go):
+```go
+r.HandleFunc("/api/users", GetUsers).Methods("GET")
+r.HandleFunc("/health",   HealthCheck).Methods("GET")
+```
+
+### 5) The short variable declaration operator :=
+`:=` declares and initializes a new variable in a single step (function scope only).
+```go
+port := os.Getenv("PORT") // declare 'port' and assign its value
+if port == "" {
+  port = "8080" // re-assign (already declared above)
+}
+```
+- Use `:=` inside functions to both declare and assign
+- Use `var` for zero‑values, wider scope, or when you need an explicit type
+```go
+var count int      // 0 by default
+var name = "Go"   // type inferred
+value := 42        // short declaration (function scope)
+```
+
+### 6) Starting the HTTP server
+```go
+log.Printf("Server starting on port %s", port)
+log.Fatal(http.ListenAndServe(":"+port, r))
+```
+- `http.ListenAndServe` blocks and serves requests using your router
+- `log.Fatal` logs and exits if the server fails to start
+
+### 7) Request flow (high level)
+```
+Client → CORS middleware → Logging middleware → Router → Handler → JSON response
+```
+
+## API Endpoints
+
+- GET `/health` → health check
+- GET `/api/users` → list users
+- POST `/api/users` → create user
+- GET `/api/users/{id}` → get user by id
+- PUT `/api/users/{id}` → update user
+- DELETE `/api/users/{id}` → delete user
+
+Quick tests
+```bash
+curl http://localhost:8080/health
+curl http://localhost:8080/api/users
 curl -X POST http://localhost:8080/api/users \
   -H "Content-Type: application/json" \
-  -d '{"name": "João Silva", "email": "joao@email.com"}'
+  -d '{"name":"John Doe","email":"john@example.com"}'
 ```
 
-### Listar usuários
-```bash
-curl http://localhost:8080/api/users
-```
+## Learning Checklist
 
-### Buscar usuário específico
-```bash
-curl http://localhost:8080/api/users/1
-```
+- Imports: standard vs. local vs. external
+- Router: create (`mux.NewRouter`), attach middlewares, register routes
+- Middlewares: cross‑cutting concerns (logging, CORS)
+- Handlers: read request, write JSON response, status codes
+- JSON: `encoding/json` for encoding/decoding
+- Variables: `:=` vs. `var`
+- Project layout: `cmd/`, `internal/`, `pkg/`
 
-### Atualizar usuário
-```bash
-curl -X PUT http://localhost:8080/api/users/1 \
-  -H "Content-Type: application/json" \
-  -d '{"name": "João Silva Atualizado", "email": "joao@email.com"}'
-```
+## Optional Deep Dive
 
-### Remover usuário
-```bash
-curl -X DELETE http://localhost:8080/api/users/1
-```
+For a verbose explanation with analogies and step‑by‑step notes, see:
+- CODE_EXPLAINED.md
 
-## 📚 Conceitos de Go Aprendidos
+## Next Steps
 
-### Estrutura de Projeto
-- **Layout padrão do Go**: `cmd/`, `internal/`, `pkg/`
-- **Separação de responsabilidades**: handlers, models, middleware
-- **Módulos Go**: `go.mod` e `go.sum`
+- Add database (PostgreSQL/MySQL) and repositories
+- Add validation and authentication (JWT)
+- Add tests (unit/integration)
+- Add Swagger/OpenAPI docs
+- Containerize with Docker
 
-### HTTP e APIs
-- **Servidor HTTP**: `net/http` package
-- **Roteamento**: Gorilla Mux para APIs REST
-- **JSON**: Codificação/decodificação de dados
-- **Middleware**: Interceptação de requisições
+## License
 
-### Boas Práticas
-- **Tratamento de erros**: Verificação de erros em cada operação
-- **Logging**: Registro de informações importantes
-- **CORS**: Configuração para requisições cross-origin
-- **Documentação**: Comentários explicativos no código
-
-## 🔮 Próximos Passos
-
-- [ ] **Banco de Dados**: Adicionar PostgreSQL ou MySQL
-- [ ] **Autenticação**: Implementar JWT
-- [ ] **Validação**: Adicionar validação de dados
-- [ ] **Testes**: Implementar testes unitários
-- [ ] **Documentação**: Adicionar Swagger/OpenAPI
-- [ ] **Docker**: Containerização da aplicação
-- [ ] **CI/CD**: Pipeline de integração contínua
-- [ ] **Monitoramento**: Logs estruturados e métricas
-
-## 🤝 Contribuindo
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -m 'feat: adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes. 
+MIT (see LICENSE) 
